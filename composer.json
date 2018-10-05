@@ -1,0 +1,13 @@
+{
+  "name": "dnadesign/silverstripe-http-cache",
+  "description": "Adds control to Pages to set Expires http headers to help control cache length for browsers, WAFs",
+  "type": "silverstripe-module",
+  "keywords": [
+    "silverstripe",
+    "cwp"
+  ],
+  "license": "BSD-3-Clause",
+  "require": {
+    "cwp/cwp": "^1.9"
+  }
+}

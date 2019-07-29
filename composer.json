@@ -6,8 +6,5 @@
     "silverstripe",
     "cwp"
   ],
-  "license": "BSD-3-Clause",
-  "require": {
-    "cwp/cwp": "^1.9"
-  }
+  "license": "BSD-3-Clause"
 }

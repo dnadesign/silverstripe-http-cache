@@ -1,11 +1,19 @@
 <?php
 
+use SilverStripe\ORM\DataExtension;
+use SilverStripe\Security\Member;
+use SilverStripe\Security\Permission;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Forms\TextField;
+use SilverStripe\Forms\FieldList;
+
 /**
  * This extension adds the ability to control the max-age per originator.
  * The configuration option is surfaced to the CMS UI. The extension needs to be added
  * to the object related to the policed controller.
  */
-class PageControlledHTTPCache extends DataExtension {
+class PageControlledHTTPCache extends DataExtension
+{
 
     /**
      * @var array
@@ -17,7 +25,8 @@ class PageControlledHTTPCache extends DataExtension {
     /**
      * @param  FieldList $fields
      */
-    public function updateCMSFields(FieldList $fields) {
+    public function updateCMSFields(FieldList $fields)
+    {
         // Only admins are allowed to modify this.
         $member = Member::currentUser();
         if (!$member || !Permission::checkMember($member, 'ADMIN')) {
@@ -25,7 +34,7 @@ class PageControlledHTTPCache extends DataExtension {
         }
 
         /* http_cache_disable can be used on subclasses to override the behaviour */
-        if($this->owner->Config()->get('http_cache_disable')) return;
+        if ($this->owner->Config()->get('http_cache_disable')) return;
 
         $default = Config::inst()->get('PageControlledHTTPCacheController', 'cacheAge_default');
 

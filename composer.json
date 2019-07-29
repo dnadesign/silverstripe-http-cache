@@ -3,8 +3,7 @@
   "description": "Adds control to Pages to set Expires http headers to help control cache length for browsers, WAFs",
   "type": "silverstripe-vendormodule",
   "keywords": [
-    "silverstripe",
-    "cwp"
+    "silverstripe"
   ],
   "license": "BSD-3-Clause"
 }

@@ -37,6 +37,12 @@ namespace\for\Element:
   http_cache_disable: true
 ```
 
+## CMS
+
+![CMS Settings Field][cms]
+
+[cms]: https://i.imgur.com/5fnZ8fp.png "CMS Field"
+
 ## Testing
 
 You can test your header directly in your browser's devTools or in your terminal with the following command

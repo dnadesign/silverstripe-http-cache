@@ -1,5 +1,7 @@
 <?php
 
+namespace DNADesign\HTTPCacheControl;
+
 use SilverStripe\Core\Extension;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
@@ -9,7 +11,7 @@ use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
  * This will be applied to the Controller::init function for the controller
  * you add this extension to.
  */
-class PageControlledHTTPCacheController extends Extension
+class ControllerExtension extends Extension
 {
 
     /**
@@ -22,22 +24,45 @@ class PageControlledHTTPCacheController extends Extension
      */
     public  function onBeforeInit()
     {
-        HTTPCacheControlMiddleware::singleton()
-            ->enableCache()
-            ->setMaxAge($this->getCacheAge());
+        $cacheControl = HTTPCacheControlMiddleware::singleton();
+
+        if ($this->getDisableCache()) {
+            $cacheControl->disableCache($force = true);
+        } else {
+            $cacheControl
+                ->enableCache($this->getForceCache())
+                ->setMaxAge($this->getCacheAge());
+
+            $this->getPublicCache($cacheControl);
+        }
+    }
+
+    public function getDisableCache()
+    {
+        if ($this->owner->failover->Config()->get('http_cache_disable')) return true;
+    }
+
+    public function getForceCache()
+    {
+        if ($this->owner->failover->Config()->get('http_cache_force')) return true;
+    }
+
+    public function getPublicCache($cacheControl)
+    {
+        if ($this->owner->failover->Config()->get('http_cache_public')) {
+            $cacheControl->publicCache($force = true);
+        }
     }
 
     public function getCacheAge()
     {
-        if ($this->owner->data()->ClassName == 'CwpSearchPage') return 0;
-
         /* http_cache_disable can be used on subclasses to override the behaviour */
-        if ($this->owner->data()->Config()->get('http_cache_disable')) return 0;
+        if ($this->owner->failover->Config()->get('http_cache_disable')) return 0;
 
         //any page with forms in its elements shouldnt be cached
-        if ($this->owner->data()->hasExtension('ElementPageExtension')) {
-            $area = $this->owner->ElementArea();
-            $elements = $area->AllElements();
+        if ($this->owner->failover->hasExtension('DNADesign\Elemental\Extensions\ElementalPageExtension')) {
+            $area = $this->owner->ElementalArea();
+            $elements = $area->Elements();
 
             foreach ($elements as $element) {
                 /* http_cache_disable can be used on Elements to override the behaviour
@@ -49,7 +74,7 @@ class PageControlledHTTPCacheController extends Extension
                 */
                 if ($element->Config()->get('http_cache_disable')) {
                     return 0;
-                } else if ($element->ClassName == 'ElementVirtualLinked') {
+                } else if ($element->ClassName == 'DNADesign\ElementalVirtual\Model\ElementVirtual') {
                     if ($element->LinkedElement()->exists() && $element->LinkedElement()->Config()->get('http_cache_disable')) {
                         return 0;
                     }
@@ -60,6 +85,6 @@ class PageControlledHTTPCacheController extends Extension
         if ($this->owner->MaxAge != '') {
             return (int) ($this->owner->MaxAge * 60);
         }
-        return (int) Config::inst()->get('PageControlledHTTPCacheController', 'cacheAge_default');
+        return (int) Config::inst()->get('DNADesign\HTTPCacheControl\ControllerExtension', 'cacheAge_default');
     }
 }

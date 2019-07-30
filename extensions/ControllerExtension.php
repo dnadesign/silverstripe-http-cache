@@ -31,9 +31,8 @@ class ControllerExtension extends Extension
         } else {
             $cacheControl
                 ->enableCache($this->getForceCache())
-                ->setMaxAge($this->getCacheAge());
-
-            $this->getPublicCache($cacheControl);
+                ->setMaxAge($this->getCacheAge())
+                ->publicCache($force = true);
         }
     }
 
@@ -45,13 +44,6 @@ class ControllerExtension extends Extension
     public function getForceCache()
     {
         if ($this->owner->failover->Config()->get('http_cache_force')) return true;
-    }
-
-    public function getPublicCache($cacheControl)
-    {
-        if ($this->owner->failover->Config()->get('http_cache_public')) {
-            $cacheControl->publicCache($force = true);
-        }
     }
 
     public function getCacheAge()

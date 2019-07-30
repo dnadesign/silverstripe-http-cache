@@ -21,7 +21,7 @@ class PageExtension extends DataExtension
      * @var array
      */
     private static $db = array(
-        'MaxAge' => 'Varchar'
+        'MaxAge' => 'Int'
     );
 
     /**
@@ -35,19 +35,27 @@ class PageExtension extends DataExtension
             return;
         }
 
-        /* http_cache_disable can be used on subclasses to override the behaviour */
-        if ($this->owner->Config()->get('http_cache_disable')) return;
-
         $default = Config::inst()->get('DNADesign\HTTPCacheControl\ControllerExtension', 'cacheAge_default');
+
+        /* http_cache_disable can be used on subclasses to override the behaviour */
+        if ($this->owner->Config()->get('http_cache_disable')) {
+            $maxAge = NumericField::create('MaxAgeOverriden', 'Custom cache timeout [minutes]', 0);
+            $maxAge->setDisabled(true);
+
+            $maxAge->setDescription('This field controls the length of time the page will be cached for.<br/>' .
+                'Overriden in the site configuration');
+        } else {
+            $maxAge = NumericField::create('MaxAge', 'Custom cache timeout [minutes]');
+            $maxAge->setDescription('This field controls the length of time the page will be cached for.<br/>' .
+                'You will not be able to see updates to this page for at most the specified amount of minutes.<br/>' .
+                'Leave empty to set back to the default which is <strong>' . ($default / 60) . ' mins</strong>. ' .
+                'Set to 0 to explicitly disable caching for this page. <br/>Also if this page contains elements ' .
+                'which have forms, the caching will be disabled automatically.');
+        }
 
         $fields->addFieldToTab(
             'Root.Cache',
-            $ma = new NumericField('MaxAge', 'Custom cache timeout [minutes]')
+            $maxAge
         );
-        $ma->setDescription('This field controls the length of time the page will be cached for.<br/>' .
-            'You will not be able to see updates to this page for at most the specified amount of minutes.<br/>' .
-            'Leave empty to set back to the default which is <strong>' . ($default / 60) . ' mins</strong>. ' .
-            'Set to 0 to explicitly disable caching for this page. <br/>Also if this page contains elements ' .
-            'which have forms, the caching will be disabled automatically.');
     }
 }

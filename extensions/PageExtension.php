@@ -21,7 +21,7 @@ class PageExtension extends DataExtension
      * @var array
      */
     private static $db = array(
-        'MaxAge' => 'Int'
+        'MaxAge' => 'Varchar(10)'
     );
 
     /**

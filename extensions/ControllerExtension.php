@@ -22,9 +22,28 @@ class ControllerExtension extends Extension
     /**
      * Called by ContentController::init();
      */
-    public  function onBeforeInit()
+    public function onBeforeInit()
     {
         $cacheControl = HTTPCacheControlMiddleware::singleton();
+        $response = $this->owner->getResponse();
+        $request = $this->owner->getRequest();
+
+        // Leverage the logic from  HTTPCacheControlMiddleware::augmentState
+        // here so we dont overide what will be set in augmentState.
+
+        // Errors disable cache (unless some errors are cached intentionally by usercode)
+        if ($response->isError() || $response->isRedirect()) {
+            // Even if publicCache(true) is specified, errors will be uncacheable
+            $cacheControl->disableCache(true);
+            return;
+        } elseif ($request->getSession()->getAll()) {
+            // If sessions exist we assume that the responses should not be cached by CDNs / proxies as we are
+            // likely to be supplying information relevant to the current user only
+
+            // Don't force in case user code chooses to opt in to public caching
+            $cacheControl->privateCache();
+            return;
+        }
 
         if ($this->getDisableCache()) {
             $cacheControl->disableCache($force = true);
@@ -38,18 +57,28 @@ class ControllerExtension extends Extension
 
     public function getDisableCache()
     {
-        if ($this->owner->failover->Config()->get('http_cache_disable')) return true;
+        if ($this->owner->failover->Config()->get('http_cache_disable')) {
+            return true;
+        }
+
+        if ($this->owner->failover->MaxAge == '0') {
+            return true;
+        }
     }
 
     public function getForceCache()
     {
-        if ($this->owner->failover->Config()->get('http_cache_force')) return true;
+        if ($this->owner->failover->Config()->get('http_cache_force')) {
+            return true;
+        }
     }
 
     public function getCacheAge()
     {
         /* http_cache_disable can be used on subclasses to override the behaviour */
-        if ($this->owner->failover->Config()->get('http_cache_disable')) return 0;
+        if ($this->owner->failover->Config()->get('http_cache_disable')) {
+            return 0;
+        }
 
         //any page with forms in its elements shouldnt be cached
         if ($this->owner->failover->hasExtension('DNADesign\Elemental\Extensions\ElementalPageExtension')) {
@@ -66,7 +95,7 @@ class ControllerExtension extends Extension
                 */
                 if ($element->Config()->get('http_cache_disable')) {
                     return 0;
-                } else if ($element->ClassName == 'DNADesign\ElementalVirtual\Model\ElementVirtual') {
+                } elseif ($element->ClassName == 'DNADesign\ElementalVirtual\Model\ElementVirtual') {
                     if ($element->LinkedElement()->exists() && $element->LinkedElement()->Config()->get('http_cache_disable')) {
                         return 0;
                     }
@@ -74,8 +103,8 @@ class ControllerExtension extends Extension
             }
         }
 
-        if ($this->owner->MaxAge != '') {
-            return (int) ($this->owner->MaxAge * 60);
+        if ($this->owner->failover->MaxAge != '' && $this->owner->failover->MaxAge != '0') {
+            return (int) ($this->owner->failover->MaxAge * 60);
         }
         return (int) Config::inst()->get('DNADesign\HTTPCacheControl\ControllerExtension', 'cacheAge_default');
     }

@@ -7,8 +7,23 @@ Enables caching for all page content (through PageController).
 In your extensions yml file include
 
 ```yml
+#Enable Caching on dev mode
+---
+Name: 'app_httpconfig'
+After: '#httpconfig-dev'
+Only:
+  environment: dev
+---
+SilverStripe\Control\Middleware\HTTPCacheControlMiddleware:
+  defaultState: 'disabled'
+  defaultForcingLevel: 0
+
+#Module config
+---
+Name: appcache
+After: '#cwpcoreconfig'
+---
 Page:
-  http_cache_public: false
   http_cache_force: false
   extensions:
     - PageExtension
@@ -17,7 +32,8 @@ PageController:
     - ControllerExtension
 ```
 
-Note that you can set your class with public caching and also force cache in it, when necessary.
+**USE AT YOUR OWN RISK**
+You can force caching by setting `http_cache_force` to true, that will force cache all over the website IGNORING any default SS behaviours.
 
 ### Disabling cache
 

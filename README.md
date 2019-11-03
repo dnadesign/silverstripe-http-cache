@@ -26,10 +26,10 @@ After: '#cwpcoreconfig'
 Page:
   http_cache_force: false
   extensions:
-    - PageExtension
+    - DNADesign\HTTPCacheControl\PageExtension
 PageController:
   extensions:
-    - ControllerExtension
+    - DNADesign\HTTPCacheControl\ControllerExtension
 ```
 
 **USE AT YOUR OWN RISK**

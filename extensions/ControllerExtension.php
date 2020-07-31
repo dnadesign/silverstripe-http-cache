@@ -38,6 +38,10 @@ class ControllerExtension extends Extension
 
     public function getDisableCache()
     {
+        if ($this->owner->Config()->get('http_cache_disable')) {
+            return true;
+        }
+
         if ($this->owner->failover->Config()->get('http_cache_disable')) {
             return true;
         }
@@ -56,6 +60,10 @@ class ControllerExtension extends Extension
 
     public function getCacheAge()
     {
+        if ($this->owner->Config()->get('http_cache_disable')) {
+            return 0;
+        }
+
         /* http_cache_disable can be used on subclasses to override the behaviour */
         if ($this->owner->failover->Config()->get('http_cache_disable')) {
             return 0;

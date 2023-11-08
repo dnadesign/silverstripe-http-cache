@@ -3,7 +3,7 @@
 namespace DNADesign\HTTPCacheControl;
 
 use SilverStripe\ORM\DataExtension;
-use SilverStripe\Security\Member;
+use SilverStripe\Security\Security;
 use SilverStripe\Security\Permission;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\FieldList;
@@ -30,7 +30,7 @@ class PageExtension extends DataExtension
     public function updateSettingsFields(FieldList $fields)
     {
         // Only admins are allowed to modify this.
-        $member = Member::currentUser();
+        $member = Security::getCurrentUser();
         if (!$member || !Permission::checkMember($member, 'ADMIN')) {
             return;
         }

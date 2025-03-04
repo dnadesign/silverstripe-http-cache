@@ -2,19 +2,19 @@
 
 namespace DNADesign\HTTPCacheControl;
 
-use SilverStripe\ORM\DataExtension;
-use SilverStripe\Security\Security;
-use SilverStripe\Security\Permission;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Extension;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
+use SilverStripe\Security\Security;
+use SilverStripe\Security\Permission;
 
 /**
  * This extension adds the ability to control the max-age per originator.
  * The configuration option is surfaced to the CMS UI. The extension needs to be added
  * to the object related to the policed controller.
  */
-class PageExtension extends DataExtension
+class PageExtension extends Extension
 {
 
     /**

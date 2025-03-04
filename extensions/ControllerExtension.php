@@ -2,9 +2,9 @@
 
 namespace DNADesign\HTTPCacheControl;
 
+use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
 use SilverStripe\Core\Extension;
 use SilverStripe\Core\Config\Config;
-use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
 
 /**
  * This extension uses the field data "max-age" and sets the max age.

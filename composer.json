@@ -7,17 +7,29 @@
   ],
   "license": "BSD-3-Clause",
   "require": {
-    "silverstripe/framework": "^4.0 || ^5.0"
+    "php": "^8.3",
+    "silverstripe/framework": "^6.0"
   },
   "config": {
     "allow-plugins": {
       "composer/installers": true,
+      "phpstan/extension-installer": true,
       "silverstripe/vendor-plugin": true
-    }
+    },
+    "sort-packages": true
   },
   "autoload": {
     "psr-4": {
       "DNADesign\\HTTPCacheControl\\": "extensions"
     }
+  },
+  "require-dev": {
+    "cambis/silverstan": "^2.1",
+    "cambis/silverstripe-rector": "^2.1",
+    "phpstan/extension-installer": "^1.4",
+    "phpstan/phpstan": "^2.1",
+    "phpstan/phpstan-deprecation-rules": "^2.0",
+    "rector/rector": "^2.2",
+    "symplify/easy-coding-standard": "^12.6"
   }
 }

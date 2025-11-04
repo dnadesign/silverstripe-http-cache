@@ -6,28 +6,25 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extension;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
-use SilverStripe\Security\Security;
+use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Permission;
+use SilverStripe\Security\Security;
 
 /**
  * This extension adds the ability to control the max-age per originator.
  * The configuration option is surfaced to the CMS UI. The extension needs to be added
  * to the object related to the policed controller.
+ *
+ * @property ?string $MaxAge
+ * @extends Extension<DataObject>
  */
 class PageExtension extends Extension
 {
+    private static array $db = [
+        'MaxAge' => 'Varchar(10)',
+    ];
 
-    /**
-     * @var array
-     */
-    private static $db = array(
-        'MaxAge' => 'Varchar(10)'
-    );
-
-    /**
-     * @param  FieldList $fields
-     */
-    public function updateSettingsFields(FieldList $fields)
+    public function updateSettingsFields(FieldList $fields): void
     {
         // Only admins are allowed to modify this.
         $member = Security::getCurrentUser();
@@ -35,10 +32,10 @@ class PageExtension extends Extension
             return;
         }
 
-        $default = Config::inst()->get('DNADesign\HTTPCacheControl\ControllerExtension', 'cacheAge_default');
+        $default = Config::inst()->get(ControllerExtension::class, 'cacheAge_default');
 
         /* http_cache_disable can be used on subclasses to override the behaviour */
-        if ($this->owner->Config()->get('http_cache_disable')) {
+        if ($this->getOwner()->Config()->get('http_cache_disable')) {
             $maxAge = TextField::create('MaxAgeOverriden', 'Custom cache timeout [minutes]', 0);
             $maxAge->setDisabled(true);
 

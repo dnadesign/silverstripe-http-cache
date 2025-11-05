@@ -24,6 +24,12 @@ class PageExtension extends Extension
         'MaxAge' => 'Varchar(10)',
     ];
 
+    private static array $scaffold_cms_fields_settings = [
+        'ignoreFields' => [
+            'MaxAge',
+        ],
+    ];
+
     public function updateSettingsFields(FieldList $fields): void
     {
         // Only admins are allowed to modify this.
